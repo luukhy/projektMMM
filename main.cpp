@@ -11,8 +11,10 @@ double k = 2.0;
 double m = 1.0;
 double mi = 0.01;
 
-std::vector<double> x;
-std::vector<double> v;
+std::vector<double> x_rk4;
+std::vector<double> v_rk4;
+std::vector<double> x_euler;
+std::vector<double> v_euler;
 
 double v_dt(double t, double x, double v)
 {
@@ -52,20 +54,51 @@ void solveRK4(double initial_a, double initial_b, double step,
     }
 }
 
+void solveEuler(double initial_a, double initial_b, double step,
+                double (*func_a)(double, double, double),
+                double (*func_b)(double, double, double),
+                std::vector<double>& result_a, std::vector<double>& result_b)
+{
+    result_a.clear();
+    result_b.clear();
+
+    result_a.push_back(initial_a);
+    result_b.push_back(initial_b);
+
+    for (size_t i = 0; i < t.size() - 1; ++i)
+    {
+        // Obliczenie pochodnych w aktualnym punkcie (t[i], result_a[i], result_b[i])
+        double da_dt = func_a(t[i], result_a[i], result_b[i]);
+        double db_dt = func_b(t[i], result_a[i], result_b[i]);
+
+        // Obliczenie następnej wartości przy użyciu metody Eulera
+        double next_a = result_a[i] + step * da_dt;
+        double next_b = result_b[i] + step * db_dt;
+
+        // Dodanie obliczonych wartości do wektorów wynikowych
+        result_a.push_back(next_a);
+        result_b.push_back(next_b);
+    }
+}
+
 int main()
 {
-    solveRK4(x0, v0, dt, x_dt, v_dt, x, v);
+    solveRK4(x0, v0, dt, x_dt, v_dt, x_rk4, v_rk4);
+    solveEuler(x0, v0, dt, x_dt, v_dt, x_euler, v_euler);
 
     matplot::subplot(1, 2, 1);
-    matplot::plot(t, x);
+    matplot::hold(matplot::on);
+    matplot::plot(t, x_rk4);
+    matplot::plot(t, x_euler);
     matplot::xlabel("time");
     matplot::title("Displacement");
 
     matplot::subplot(1, 2, 2);
-    matplot::plot(t, v);
+    matplot::hold(matplot::on);
+    matplot::plot(t, v_rk4);
+    matplot::plot(t, v_euler);
     matplot::xlabel("time");
     matplot::title("Velocity");
     matplot::show();
     return 0;
 }
-

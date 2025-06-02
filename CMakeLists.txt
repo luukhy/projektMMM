@@ -47,8 +47,8 @@ add_executable(MyExecutable
 
 add_executable(test-executable 
     src/testing-od-piotrka.cpp
-    #include/mainwindow.h 
-    #src/mainwindow.cpp
+    include/force.h
+    src/force.cpp
 )
 
 target_link_libraries(test-executable PRIVATE 

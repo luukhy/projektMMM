@@ -80,6 +80,16 @@
         "xutility": "cpp",
         "span": "cpp",
         "variant": "cpp",
-        "xstddef": "cpp"
+        "xstddef": "cpp",
+        "bitset": "cpp",
+        "codecvt": "cpp",
+        "cwctype": "cpp",
+        "deque": "cpp",
+        "memory_resource": "cpp",
+        "string_view": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "stdfloat": "cpp",
+        "cinttypes": "cpp"
     }
 }

@@ -8,7 +8,6 @@
 #define PI 3.14159265
 #endif
 
-//na koniec usunac niepotrzebne cout 
 
 double k_global = 30.0;
 double m_global = 1.0;
@@ -21,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     
     t_max = 2.0;
-    dt = 0.1;
+    dt = 0.01;
     x0 = 4.0;
     v0 = 0.0;
     k = 3.0;
@@ -32,12 +31,12 @@ MainWindow::MainWindow(QWidget *parent)
     {
         connect(ui->runButton, &QPushButton::clicked, this, &MainWindow::runSimulationAndPlot);
     }
-    if (ui->kSpinBox) { // Sprawdź, czy kSpinBox istnieje
+    if (ui->kSpinBox) { // sprawdzenie czy kSpinBox istnieje
         ui->kSpinBox->setValue(k_global);
         ui->kSpinBox->setValue(k); 
         
     }
-    if (ui->mSpinBox) { // Sprawdź, czy kSpinBox istnieje
+    if (ui->mSpinBox) {
         ui->mSpinBox->setValue(m_global); 
         ui->mSpinBox->setValue(m); 
     }
@@ -95,15 +94,12 @@ void MainWindow::solveEuler(double initial_a, double initial_b, double step,
         
         for (size_t i = 0; i < t.size() - 1; ++i)
         {
-            // Obliczenie pochodnych w aktualnym punkcie (t[i], result_a[i], result_b[i])
             double da_dt = func_a(t[i], result_a[i], result_b[i], input_force);
             double db_dt = func_b(t[i], result_a[i], result_b[i], input_force);
             
-            // Obliczenie następnej wartości przy użyciu metody Eulera
             double next_a = result_a[i] + step * da_dt;
             double next_b = result_b[i] + step * db_dt;
             
-            // Dodanie obliczonych wartości do wektorów wynikowych
             result_a.push_back(next_a);
             result_b.push_back(next_b);
         }
@@ -118,10 +114,11 @@ void MainWindow::runSimulationAndPlot()
     double period = 3.0;
     double amplitude = 4.0;
     double phase = 0.0;
+    double offset = 0.0;
     
     double freq =  sqrt(k/m) / (2*PI);
     period = 1.0 / freq;
-    Force input_force(ForceType::SINE, t, period, amplitude, phase);
+    Force input_force(ForceType::SINE, t, period, amplitude, phase, offset);
 
     solveRK4(x0, v0, dt, x_dt, v_dt, x_rk4, v_rk4, input_force);
     solveEuler(x0, v0, dt, x_dt, v_dt, x_euler, v_euler, input_force);
@@ -163,8 +160,6 @@ void MainWindow::plotResults()
     
     matplot::show(); 
 }
-
-
 
 
 double v_dt(double time, double x, double v, Force input)

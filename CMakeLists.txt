@@ -25,7 +25,14 @@ if (MSVC)
     add_compile_options(/Zc:__cplusplus)
 endif()
 
-set(CMAKE_PREFIX_PATH "D:/QT/6.9.0/msvc2022_64/lib/cmake")
+if(UNIX AND NOT APPLE)
+    set(CMAKE_PREFIX_PATH "Durak/home/piotrek/Qt/6.9.0/gcc_64/lib/cmake")
+endif()
+
+if(WIN32)
+    set(CMAKE_PREFIX_PATH "D:/QT/6.9.0/msvc2022_64/lib/cmake")
+endif()
+
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 add_executable(MyExecutable 

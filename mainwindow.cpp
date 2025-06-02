@@ -251,6 +251,10 @@ void MainWindow::plotResults()
         return;
     }
 
+    #ifdef __linux__
+        setenv("GNUTERM", "x11", 1);
+    #endif
+
     matplot::figure(true);
     matplot::subplot(1, 2, 1);
     matplot::hold(matplot::on);

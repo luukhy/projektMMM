@@ -223,6 +223,11 @@ int main()
     solveRK4(x0, v0, dt, x_dt, v_dt, x_rk4, v_rk4, input_force);
     solveEuler(x0, v0, dt, x_dt, v_dt, x_euler, v_euler, input_force);
     
+
+    #ifdef __linux__
+        setenv("GNUTERM", "x11", 1);
+    #endif
+    
     matplot::figure(true);
     matplot::subplot(1, 2, 1);
     matplot::hold(matplot::on);

@@ -35,10 +35,24 @@ endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
 add_executable(MyExecutable 
     main.cpp
-    mainwindow.h 
-    mainwindow.cpp
+    include/mainwindow.h
+    include/force.h 
+    src/mainwindow.cpp
+    src/force.cpp
+)
+
+add_executable(test-executable 
+    src/testing-od-piotrka.cpp
+    #include/mainwindow.h 
+    #src/mainwindow.cpp
+)
+
+target_link_libraries(test-executable PRIVATE 
+    matplot       
 )
 
 target_link_libraries(MyExecutable PRIVATE 

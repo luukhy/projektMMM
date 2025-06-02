@@ -1,6 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#ifdef __linux__
+    setenv("GNUTERM", "x11", 1);
+#endif
+
 #include <QMainWindow>
 #include <vector> 
 

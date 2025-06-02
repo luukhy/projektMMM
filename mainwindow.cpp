@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     dt = 0.1;
     x0 = 4.0;
     v0 = 0.0;
-    k = 20.0;
+    k = 3.0;
     m = 1.0;
     mi = 0.01;
 
@@ -250,6 +250,7 @@ void MainWindow::plotResults()
         std::cout << "No data to plot." << std::endl;
         return;
     }
+
     matplot::figure(true);
     matplot::subplot(1, 2, 1);
     matplot::hold(matplot::on);

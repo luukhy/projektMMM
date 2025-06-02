@@ -26,7 +26,7 @@ if (MSVC)
 endif()
 
 if(UNIX AND NOT APPLE)
-    set(CMAKE_PREFIX_PATH "Durak/home/piotrek/Qt/6.9.0/gcc_64/lib/cmake")
+    set(CMAKE_PREFIX_PATH "/home/piotrek/Qt/6.9.0/gcc_64/lib/cmake")
 endif()
 
 if(WIN32)

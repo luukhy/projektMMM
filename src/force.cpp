@@ -5,7 +5,7 @@
 #define PI 3.14159265
 
 
-Force::Force(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double offset)
+Force::Force(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double offset = 0.0, double duty_cycle = 0.0)
 {
     this->time = time;
     this->force_type = type;
@@ -14,9 +14,10 @@ Force::Force(ForceType type, std::vector<double>time, double period, double ampl
     this->phase = phase;
     this->freq = 1.0/period;
     this->offset = offset;
-    this->values = populateForce(force_type, time, this->freq, amplitude, phase, offset);
+    this->duty_cycle = duty_cycle;
+    this->values = populateForce(force_type, time, this->freq, amplitude, phase, offset, duty_cycle);
 }
-void Force::updateForce(ForceType type, std::vector<double>time, double period, double amplitude, double phase)
+void Force::updateForce(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double duty_cycle)
 {
     this->values.clear();
     this->time.clear();
@@ -26,7 +27,8 @@ void Force::updateForce(ForceType type, std::vector<double>time, double period, 
     this->period = period;
     this->amplitude = amplitude;
     this->phase = phase;
-    this->values = populateForce(force_type, time, freq, amplitude, phase, this->offset);        
+    this->duty_cycle = duty_cycle;
+    this->values = populateForce(force_type, time, freq, amplitude, phase, this->offset, duty_cycle);        
 }
 
 double Force::atTime(double t)
@@ -111,8 +113,24 @@ void populateSawtooth(std::vector<double>& vals, std::vector<double> args, doubl
     }
 }
 
+void populateSquare(std::vector<double>& vals, std::vector<double> args, double freq , double ampl, double phase, double offset, double duty_cycle)
+{
+    if (ampl == 0.0)
+        offset = 0.0;
+    double period = 1.0 / freq;
+    double high_time = duty_cycle * period;
+    for (int i = 0; i < args.size(); i++)
+    {   
+        double t_mod = fmod(args[i], period);
+        if (t_mod < high_time)
+            vals.push_back(ampl + offset);
+        else 
+            vals.push_back(-ampl + offset);
+    }
+}
 
-std::vector<double> populateForce(ForceType force_type, std::vector<double> time, double freq, double amplitude, double phase, double offset)
+
+std::vector<double> populateForce(ForceType force_type, std::vector<double> time, double freq, double amplitude, double phase, double offset, double duty_cycle)
 {
     std::vector<double> input_force;
     if (force_type == ForceType::SINE)
@@ -122,6 +140,10 @@ std::vector<double> populateForce(ForceType force_type, std::vector<double> time
     if (force_type == ForceType::TRIANGLE)
     {
         populateSawtooth(input_force, time, freq, amplitude, phase, offset);
+    }
+    if (force_type == ForceType::SQUARE)
+    {
+        populateSquare(input_force, time, freq, amplitude, phase, offset, duty_cycle);
     }
     return input_force;
 }

@@ -88,14 +88,15 @@ double x_dt(double t, double x, double v, Force input)
 
 int main()
 {
-    double period = 3.0;
-    double amplitude = 2.0;
+    double period = 2.0;
+    double amplitude = 1;
     double phase = 4.3;
-    double offset = 1.0;
+    double offset = 0.0;
+    double duty_cycle = 0.25;
     
     // double freq =  sqrt(k/m) / (2*PI);
     // period = 1.0 / freq;
-    Force input_force(ForceType::TRIANGLE, t, period, amplitude, phase, offset);
+    Force input_force(ForceType::SQUARE, t, period, amplitude, phase, offset, duty_cycle);
     
     solveRK4(x0, v0, dt, x_dt, v_dt, x_rk4, v_rk4, input_force);
     solveEuler(x0, v0, dt, x_dt, v_dt, x_euler, v_euler, input_force);

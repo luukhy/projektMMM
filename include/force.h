@@ -5,10 +5,11 @@
 
 enum class ForceType {SQUARE, TRIANGLE, SINE};
 
-std::vector<double> populateForce(ForceType force_type, std::vector<double> time, double period, double amplitude, double phase, double offset);
+std::vector<double> populateForce(ForceType force_type, std::vector<double> time, double period, double amplitude, double phase, double offset, double duty_cycle);
 double getInterpolatedValue(std::vector<double>& time, const std::vector<double>& values, double t_searched);
 void populateSine(std::vector<double>& vals, std::vector<double> args, double period, double ampl, double phase, double offset);
 void populateSawtooth(std::vector<double>& vals, std::vector<double> args, double period, double ampl, double phase, double offset);
+void populateSquare(std::vector<double>& vals, std::vector<double> args, double period, double ampl, double phase, double offset, double duty_cycle);
 
 class Force
 {   
@@ -16,11 +17,11 @@ class Force
     ForceType force_type;
     std::vector<double> values;
     std::vector<double> time;
-    double period, amplitude, phase, freq, offset = 0.0;
+    double period, amplitude, phase, freq, offset = 0.0, duty_cycle = 0;
     
     public:
-    Force(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double offfset);
-    void updateForce(ForceType type, std::vector<double>time, double period, double amplitude, double phase);
+    Force(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double offfset, double duty_cycle);
+    void updateForce(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double duty_cycle);
     double atTime(double t);
     std::vector<double> getValues();
     std::vector<double> getTime();

@@ -287,6 +287,7 @@ void MainWindow::updateQtPlots()
     ui->customPlot_disp->graph(1)->setName("Euler");
     
     ui->customPlot_vel->replot();
+    ui->customPlot_disp->replot();
 }
 
 void MainWindow::plotResultsMatplot()

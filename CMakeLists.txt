@@ -33,20 +33,25 @@ if(WIN32)
     set(CMAKE_PREFIX_PATH "D:/QT/6.9.0/msvc2022_64/lib/cmake")
 endif()
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets PrintSupport) 
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 add_executable(MyExecutable 
     main.cpp
     include/mainwindow.h
-    include/force.h 
     src/mainwindow.cpp
+    
+    include/force.h
     src/force.cpp
+    
+    include/qcustomplot.h 
+    src/qcustomplot.cpp 
 )
 
 add_executable(test-executable 
     src/testing-od-piotrka.cpp
+    
     include/force.h
     src/force.cpp
 )
@@ -58,4 +63,5 @@ target_link_libraries(test-executable PRIVATE
 target_link_libraries(MyExecutable PRIVATE 
     matplot       
     Qt6::Widgets 
+    Qt6::PrintSupport  
 )

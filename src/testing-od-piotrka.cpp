@@ -9,12 +9,12 @@
 
 const double t_max = 6.0;
 const double dt = 0.01;
-const double x0 = 0;
+const double x0 = 10;
 const double v0 = 0;
 auto t = matplot::linspace(0, t_max, static_cast<int>(t_max / dt));
 double k = 10.0;
 double m = 1.0;
-double mi = 0.01;
+double mi = 1;
 
 
 void solveRK4(double initial_a, double initial_b, double step,
@@ -78,7 +78,7 @@ void solveEuler(double initial_a, double initial_b, double step,
     
 double v_dt(double t, double x, double v, Force input)
 {
-    return -k/m * x + input.atTime(t);
+    return -k/m * x + input.atTime(t) - mi * v;
 }
 
 double x_dt(double t, double x, double v, Force input)
@@ -94,9 +94,9 @@ int main()
     double offset = 0.0;
     double duty_cycle = 0.25;
     
-    // double freq =  sqrt(k/m) / (2*PI);
-    // period = 1.0 / freq;
-    Force input_force(ForceType::SQUARE, t, period, amplitude, phase, offset, duty_cycle);
+    double freq =  sqrt(k/m) / (2*PI);
+    period = 1.0 / freq;
+    Force input_force(ForceType::SINE, t, period, amplitude, phase, offset, duty_cycle);
     
     solveRK4(x0, v0, dt, x_dt, v_dt, x_rk4, v_rk4, input_force);
     solveEuler(x0, v0, dt, x_dt, v_dt, x_euler, v_euler, input_force);

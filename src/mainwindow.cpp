@@ -9,7 +9,7 @@
 #endif
 
 
-double k_global = 30.0;
+double k_global = 2.0;
 double m_global = 1.0;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -19,18 +19,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->customPlot->addGraph();
     ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-    QVector<double> x(101), y(101);
-    for (int i = 0; i < 101; ++i) {
-        x[i] = i / 50.0 - 1;
-        y[i] = x[i] * x[i];
-    }
-    ui->customPlot->graph(0)->setData(x, y);
-    ui->customPlot->replot();
 
     
-    t_max = 2.0;
+    t_max = 6.0;
     dt = 0.01;
-    x0 = 4.0;
+    x0 = 10.0;
     v0 = 0.0;
     k = 3.0;
     m = 1.0;
@@ -42,13 +35,24 @@ MainWindow::MainWindow(QWidget *parent)
     }
     if (ui->kSpinBox) { // sprawdzenie czy kSpinBox istnieje
         ui->kSpinBox->setValue(k_global);
-        ui->kSpinBox->setValue(k); 
+        ui->kSpinBox->setValue(k);  
         
     }
     if (ui->mSpinBox) {
         ui->mSpinBox->setValue(m_global); 
         ui->mSpinBox->setValue(m); 
     }
+
+    m_timer = new QTimer(this);
+    connect(m_timer, &QTimer::timeout, this, &MainWindow::updateGraph);
+    m_timer->start(30); // update every 30 ms
+
+
+    connect(ui->customPlot, &QCustomPlot::mouseMove, this, [this](QMouseEvent *event){
+    double x = ui->customPlot->xAxis->pixelToCoord(event->pos().x());
+    double y = ui->customPlot->yAxis->pixelToCoord(event->pos().y());
+    statusBar()->showMessage(QString("x=%1, y=%2").arg(x, 0, 'f', 2).arg(y, 0, 'f', 2));
+});
 
 }
 
@@ -121,7 +125,7 @@ void MainWindow::runSimulationAndPlot()
     t = matplot::linspace(0, t_max, nupoints);
 
     double period = 3.0;
-    double amplitude = 4.0;
+    double amplitude = 0.0;
     double phase = 0.0;
     double offset = 0.0;
     double duty_cycle = 0.5;
@@ -136,7 +140,32 @@ void MainWindow::runSimulationAndPlot()
     std::cout << "RK4 x_rk4 size: " << x_rk4.size() << std::endl;
     std::cout << "Euler x_euler size: " << x_euler.size() << std::endl;
 
-    plotResults();
+
+    updateQtPlots();
+    //plotResults();
+}
+
+void MainWindow::updateQtPlots()
+{
+    double y_max_val, y_min_val;
+    QVector<double> x(x_rk4.size()), y(x_rk4.size());
+    y_max_val = x_rk4[0];
+    y_min_val = x_rk4[0];
+    for (int i = 0; i < x_rk4.size(); i++) 
+    {
+        x[i] = this->t[i];
+        y[i] = this->x_rk4[i];
+
+        if (y[i] > y_max_val)
+            y_max_val = y[i];
+        if (y[i] < y_min_val)
+            y_min_val = y[i];
+    }
+    ui->customPlot->xAxis->setRange(0, t[x_rk4.size()]);
+    ui->customPlot->yAxis->setRange(y_min_val, y_max_val);
+    ui->customPlot->graph(0)->setData(x, y);
+    ui->customPlot->replot();
+
 }
 
 void MainWindow::plotResults()
@@ -171,10 +200,27 @@ void MainWindow::plotResults()
     matplot::show(); 
 }
 
+void MainWindow::updateGraph()
+{
+    const int N = 500;
+    QVector<double> x(N), y(N);
+
+    for (int i = 0; i < N; ++i) {
+        x[i] = i * 2 * M_PI / N;
+        y[i] = std::sin(x[i] + m_phase);
+    }
+
+    ui->customPlot->graph(0)->setData(x, y);
+    ui->customPlot->replot();
+
+    m_phase += 0.1;  // Advance the phase for motion
+}
+
+
 
 double v_dt(double time, double x, double v, Force input)
 {
-    return -k_global/m_global * x + input.atTime(time);
+    return -k_global/m_global * x; //+ input.atTime(time);
 }
 
 double x_dt(double time, double x, double v, Force input)

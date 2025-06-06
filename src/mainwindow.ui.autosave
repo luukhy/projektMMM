@@ -241,7 +241,7 @@ border-radius: 5px;</string>
      <property name="styleSheet">
       <string notr="true">text-color: white;
 background-color: white;
-border-radius: 4px;
+border-radius: 10px;
 </string>
      </property>
      <property name="text">
@@ -307,7 +307,7 @@ border-radius: 5px;</string>
      <property name="styleSheet">
       <string notr="true">text-color: white;
 background-color: white;
-border-radius: 4px;
+border-radius: 10px;
 </string>
      </property>
      <property name="text">

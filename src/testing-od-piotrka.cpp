@@ -12,7 +12,7 @@ const double dt = 0.01;
 const double x0 = 10;
 const double v0 = 0;
 auto t = matplot::linspace(0, t_max, static_cast<int>(t_max / dt));
-double k = 10.0;
+double k = 30.0;
 double m = 1.0;
 double mi = 1;
 
@@ -89,7 +89,7 @@ double x_dt(double t, double x, double v, Force input)
 int main()
 {
     double period = 2.0;
-    double amplitude = 1;
+    double amplitude = 0;
     double phase = 4.3;
     double offset = 0.0;
     double duty_cycle = 0.25;

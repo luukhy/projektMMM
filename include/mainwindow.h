@@ -14,17 +14,22 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-public:
+    public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 // dodanie slotu do uruchamiania symulacji z UI
-public slots:
+    public slots:
     void runSimulationAndPlot(); 
 
-private:
+    private:
+    // UI variables
     Ui::MainWindow *ui;
+    QTimer *m_timer;
+    double m_phase = 0.0;
 
+
+    // simulation variables
     double t_max;
     double dt;
     double x0;
@@ -33,12 +38,14 @@ private:
     double m;
     double mi;
 
+
     std::vector<double> t;
     std::vector<double> x_rk4;
     std::vector<double> v_rk4;
     std::vector<double> x_euler;
     std::vector<double> v_euler;    
 
+    // simulation functionalities
     void solveRK4(double initial_a, double initial_b, double step,
     double (*func_a)(double, double, double, Force),
     double (*func_b)(double, double, double, Force),
@@ -51,7 +58,10 @@ private:
     std::vector<double>& result_a, std::vector<double>& result_b,
     Force input_force);
 
+    // UI functionalities
+    void updateQtPlots();
     void plotResults(); 
+    void updateGraph();
 };
 
 double v_dt(double time, double x, double v, Force input); // 'time' zamiast 't' dla jasności

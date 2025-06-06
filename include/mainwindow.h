@@ -30,6 +30,7 @@ class MainWindow : public QMainWindow
     QTimer *m_timer;
     double m_phase = 0.0;
     Force *m_input_force;
+
     
     
     // simulation variables

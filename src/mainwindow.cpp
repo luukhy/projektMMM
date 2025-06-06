@@ -4,6 +4,7 @@
 #include <iostream>
 #include <QPushButton>
 #include <force.h>
+#include <QPixmap>
 
 #ifndef PI
 #define PI 3.14159265
@@ -31,7 +32,8 @@ m_input_force(new Force)
     ui->customPlot_disp->addGraph(); //RK4 (0)
     ui->customPlot_disp->addGraph(); //Euler (1)
     ui->customPlot_disp->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-    
+    QPixmap pixmap("res/model.png"); 
+    ui->Imagelabel->setPixmap(pixmap);
 
     // GUI values init 
     ui->k1SpinBox->setValue(1.0);

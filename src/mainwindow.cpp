@@ -197,7 +197,7 @@ void MainWindow::updateQtPlots()
     QVector<double> x(m_v_rk4.size()), y(m_v_rk4.size());
     y_max_val = m_v_rk4[0];
     y_min_val = m_v_rk4[0];
-    for (int i = 0; i < m_v_rk4.size(); i++) 
+    for (int i = 0; i < m_t.size(); i++) 
     {
         x[i] = m_t[i];
         y[i] = m_v_rk4[i];
@@ -207,13 +207,13 @@ void MainWindow::updateQtPlots()
         if (y[i] < y_min_val)
             y_min_val = y[i];
     }
-    ui->customPlot_vel->xAxis->setRange(0, m_t[m_v_rk4.size()]);
+    ui->customPlot_vel->xAxis->setRange(0, m_t[m_t.size() - 1]);
     ui->customPlot_vel->yAxis->setRange(y_min_val, y_max_val);
     ui->customPlot_vel->graph(0)->setData(x, y);
     ui->customPlot_vel->graph(0)->setPen(QPen(Qt::red));
 
     
-    for (int i = 0; i < m_v_euler.size(); i++) 
+    for (int i = 0; i < m_t.size(); i++) 
     {
         x[i] = m_t[i];
         y[i] = m_v_euler[i];
@@ -223,7 +223,7 @@ void MainWindow::updateQtPlots()
         if (y[i] < y_min_val)
             y_min_val = y[i];
     }
-    ui->customPlot_vel->xAxis->setRange(0, m_t[m_v_rk4.size()]);
+    ui->customPlot_vel->xAxis->setRange(0, m_t[m_t.size() - 1]);
     ui->customPlot_vel->yAxis->setRange(y_min_val, y_max_val);
     ui->customPlot_vel->graph(1)->setData(x, y);
     ui->customPlot_vel->graph(1)->setPen(QPen(Qt::blue, 1, Qt::DashLine));

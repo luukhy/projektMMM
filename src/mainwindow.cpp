@@ -23,7 +23,14 @@ m_input_force(new Force)
     ui->setupUi(this);
     ui->customPlot->addGraph();
     ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    ui->customPlot_vel->addGraph(); //RK4
+    ui->customPlot_vel->addGraph(); //Euler
+    ui->customPlot_vel->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     
+    ui->customPlot_disp->addGraph();
+    ui->customPlot_disp->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    
+
     // GUI values init 
     ui->k1SpinBox->setValue(1.0);
     ui->k2SpinBox->setValue(1.0);  
@@ -40,33 +47,55 @@ m_input_force(new Force)
     // simulation variables init
     m_t_max = 6.0;
     m_dt = 0.01;
+    size_t nupoints = static_cast<size_t>(m_t_max / m_dt) + 1;
+    m_t = matplot::linspace(0, m_t_max, nupoints);
+
     m_x0 = 10.0;
     m_v0 = 0.0;
-    m_k1 = 3.0;
+    m_k1 = ui->k1SpinBox->value();
     m_k2 = 3.0;
     m_mass = 1.0;
     m_mi = 0.01;
 
 
     // input force variables init
-
-    // m_input_force->values = populateForce()
+    double period = 3.0;
+    double amplitude = 0.0;
+    double phase = 0.0;
+    double offset = 0.0;
+    double duty_cycle = 0.5;
+    m_input_force->updateForce(ForceType::SINE, m_t, period, amplitude, phase, offset, duty_cycle);
 
     connect(ui->runButton, &QPushButton::clicked, this, &MainWindow::runSimulationAndPlot);
+    connect(ui->k1SpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+        this, &MainWindow::updateInputGraph);
+
+    connect(ui->k2SpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this, &MainWindow::updateInputGraph);
     
     
-    ui->massSpinBox->setValue(m_global); 
-    
-    m_timer = new QTimer(this);
-    connect(m_timer, &QTimer::timeout, this, &MainWindow::updateInputGraph);
-    m_timer->start(30); // update every 30 ms
+    // m_timer = new QTimer(this);
+    // connect(m_timer, &QTimer::timeout, this, &MainWindow::updateInputGraph);
+    // m_timer->start(30); // update every 30 ms
 
 
     connect(ui->customPlot, &QCustomPlot::mouseMove, this, [this](QMouseEvent *event){
     double x = ui->customPlot->xAxis->pixelToCoord(event->pos().x());
     double y = ui->customPlot->yAxis->pixelToCoord(event->pos().y());
     statusBar()->showMessage(QString("x=%1, y=%2").arg(x, 0, 'f', 2).arg(y, 0, 'f', 2));
-});
+    });
+
+    connect(ui->customPlot_disp, &QCustomPlot::mouseMove, this, [this](QMouseEvent *event){
+    double x = ui->customPlot->xAxis->pixelToCoord(event->pos().x());
+    double y = ui->customPlot->yAxis->pixelToCoord(event->pos().y());
+    statusBar()->showMessage(QString("x=%1, y=%2").arg(x, 0, 'f', 2).arg(y, 0, 'f', 2));
+    });
+
+    connect(ui->customPlot_vel, &QCustomPlot::mouseMove, this, [this](QMouseEvent *event){
+    double x = ui->customPlot->xAxis->pixelToCoord(event->pos().x());
+    double y = ui->customPlot->yAxis->pixelToCoord(event->pos().y());
+    statusBar()->showMessage(QString("x=%1, y=%2").arg(x, 0, 'f', 2).arg(y, 0, 'f', 2));
+    });
 
 }
 
@@ -148,13 +177,13 @@ void MainWindow::runSimulationAndPlot()
     
     // double freq =  sqrt(m_k1/m_mass) / (2*PI);
     // period = 1.0 / freq;
+    
     Force input_force(ForceType::TRIANGLE, m_t, period, amplitude, phase, offset, duty_cycle);
-
-    solveRK4(m_x0, m_v0, m_dt, x_dt, v_dt, m_x_rk4, m_v_rk4, input_force);
+    solveRK4(m_x0, m_v0, m_dt, x_dt, v_dt, m_x_rk4, m_v_rk4, *m_input_force);
     solveEuler(m_x0, m_v0, m_dt, x_dt, v_dt, m_x_euler, m_v_euler, input_force);
     
-    std::cout << "RK4 x_rk4 size: " << m_x_rk4.size() << std::endl;
-    std::cout << "Euler x_euler size: " << m_x_euler.size() << std::endl;
+    // std::cout << "RK4 x_rk4 size: " << m_x_rk4.size() << std::endl;
+    // std::cout << "Euler x_euler size: " << m_x_euler.size() << std::endl;
 
 
     updateQtPlots();
@@ -164,24 +193,47 @@ void MainWindow::runSimulationAndPlot()
 void MainWindow::updateQtPlots()
 {
     double y_max_val, y_min_val;
-    QVector<double> x(m_x_rk4.size()), y(m_x_rk4.size());
-    y_max_val = m_x_rk4[0];
-    y_min_val = m_x_rk4[0];
-    for (int i = 0; i < m_x_rk4.size(); i++) 
+    // velocity plots
+    QVector<double> x(m_v_rk4.size()), y(m_v_rk4.size());
+    y_max_val = m_v_rk4[0];
+    y_min_val = m_v_rk4[0];
+    for (int i = 0; i < m_v_rk4.size(); i++) 
     {
         x[i] = m_t[i];
-        y[i] = m_x_rk4[i];
+        y[i] = m_v_rk4[i];
 
         if (y[i] > y_max_val)
             y_max_val = y[i];
         if (y[i] < y_min_val)
             y_min_val = y[i];
     }
-    ui->customPlot->xAxis->setRange(0, m_t[m_x_rk4.size()]);
-    ui->customPlot->yAxis->setRange(y_min_val, y_max_val);
-    ui->customPlot->graph(0)->setData(x, y);
-    ui->customPlot->replot();
+    ui->customPlot_vel->xAxis->setRange(0, m_t[m_v_rk4.size()]);
+    ui->customPlot_vel->yAxis->setRange(y_min_val, y_max_val);
+    ui->customPlot_vel->graph(0)->setData(x, y);
+    ui->customPlot_vel->graph(0)->setPen(QPen(Qt::red));
 
+    
+    for (int i = 0; i < m_v_euler.size(); i++) 
+    {
+        x[i] = m_t[i];
+        y[i] = m_v_euler[i];
+
+        if (y[i] > y_max_val)
+            y_max_val = y[i];
+        if (y[i] < y_min_val)
+            y_min_val = y[i];
+    }
+    ui->customPlot_vel->xAxis->setRange(0, m_t[m_v_rk4.size()]);
+    ui->customPlot_vel->yAxis->setRange(y_min_val, y_max_val);
+    ui->customPlot_vel->graph(1)->setData(x, y);
+    ui->customPlot_vel->graph(1)->setPen(QPen(Qt::blue, 1, Qt::DashLine));
+    
+    ui->customPlot_vel->legend->setVisible(true);
+    ui->customPlot_vel->graph(0)->setName("RK4");
+    ui->customPlot_vel->graph(1)->setName("Euler");
+
+    
+    ui->customPlot_vel->replot();
 }
 
 void MainWindow::plotResultsMatplot()
@@ -229,25 +281,28 @@ void MainWindow::updateInputGraph()
     //     if (y[i] < y_min_val)
     //         y_min_val = y[i];
     // }
-    const int N = 500;
+    const int N = m_t.size();
     QVector<double> x(N), y(N);
     double amplitude = ui->k1SpinBox->value();
+    double period = ui->k2SpinBox->value(); //ui->periodSpinBoc->value();
+    double phase = 0.0; //ui->phaseSpinBoc->value();
+    double offset = 0.0; //ui->offsetSpinBoc->value();
+    double duty_cycle = 0.5; //ui->dutyCycleSpinBoc->value();
+
+    m_input_force->updateForce(ForceType::SINE, m_t, period, amplitude, phase, offset, duty_cycle);
     for (int i = 0; i < N; ++i) {
-        x[i] = i * 2 * M_PI / N;
-        y[i] = amplitude * std::sin(x[i] + m_phase);
+        x[i] = m_t[i];
+        y[i] = m_input_force->getValues()[i];
     }
 
     ui->customPlot->graph(0)->setData(x, y);
     ui->customPlot->replot();
 
-    // m_phase += 0.1;  // Advance the phase for motion
 }
-
-
 
 double v_dt(double time, double x, double v, Force input)
 {
-    return -k_global/m_global * x; //+ input.atTime(time);
+    return -k_global/m_global * x + input.atTime(time);
 }
 
 double x_dt(double time, double x, double v, Force input)

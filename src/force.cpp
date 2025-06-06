@@ -3,22 +3,7 @@
 
 #define PI 3.14159265
 
-
-Force::Force()
-{
-    double t_max = 10;
-    double dt = 0.01;
-    size_t nupoints = static_cast<size_t>(t_max / dt) + 1;
-    this->time = matplot::linspace(0, t_max, nupoints);
-    this->force_type = ForceType::SINE;
-    this->period = 1.0;
-    this->amplitude = 1.0;
-    this->phase = 0.0;
-    this->freq = 1.0/period;
-    this->offset = 0.0;
-    this->duty_cycle = 0.5;
-    this->values = populateForce(force_type, time, this->freq, amplitude, phase, offset, duty_cycle);
-}
+Force::Force() {}
 
 Force::Force(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double offset = 0.0, double duty_cycle = 0.0)
 {
@@ -33,16 +18,18 @@ Force::Force(ForceType type, std::vector<double>time, double period, double ampl
     this->values = populateForce(force_type, time, this->freq, amplitude, phase, offset, duty_cycle);
 }
 
-void Force::updateForce(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double duty_cycle)
+void Force::updateForce(ForceType force_type, std::vector<double> time, double period, double amplitude, double phase, double offset, double duty_cycle)
 {
     this->values.clear();
     this->time.clear();
 
     this->time = time;
-    this->force_type = type;
+    this->force_type = force_type;
     this->period = period;
     this->amplitude = amplitude;
     this->phase = phase;
+    this->freq = 1.0/period;
+    this->offset = offset;
     this->duty_cycle = duty_cycle;
     this->values = populateForce(force_type, time, freq, amplitude, phase, this->offset, duty_cycle);        
 }

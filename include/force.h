@@ -24,18 +24,19 @@ class Force
     
     public:
     Force();
-    Force(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double offfset, double duty_cycle);
-    void updateForce(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double duty_cycle);
+    Force(ForceType force_type, std::vector<double>time, double period, double amplitude, double phase, double offfset, double duty_cycle);
+    void updateForce(ForceType force_type, std::vector<double> time, double period, double amplitude, double phase, double offset, double duty_cycle);
     double atTime(double t);
     std::vector<double> getValues();
     std::vector<double> getTime();
 
-    void setValues();
+    void setValues(std::vector<double> vals) {this->values = vals;};
     void setPeriod(double period) {this->period = period;}
     void setAmplitude(double amplitude) {this->amplitude = amplitude;}
     void setPhase(double phase) {this->phase = phase;}
     void setFreq(double freq) {this->freq = freq;}
     void setOffset(double offset) {this->offset = offset;}
+    void setDutyCycle(double duty_cycle) {this->offset = offset;}
 
     const double getPeriod() {return this->period;}
     const double getAmplitude() {return this->amplitude;}

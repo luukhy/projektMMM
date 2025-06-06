@@ -1,24 +1,10 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAINWINDOW_HEADER
+#define MAINWINDOW_HEADER
 
 #include <QMainWindow>
 #include <vector> 
 #include <force.h>
-
-// struct defaultInForceValues
-// {
-//     double t_max = 10;
-//     double dt = 0.01;
-//     size_t nupoints = static_cast<size_t>(t_max / dt) + 1;
-//     double time = matplot::linspace(0, t_max, nupoints);
-//     ForceType force_type = ForceType::SINE;
-//     double period = 1.0;
-//     double amplitude = 1.0;
-//     double phase = 0.0;
-//     double freq = 1.0/period;
-//     double offset = 0.0;
-//     double duty_cycle = 0.5;
-// } def_force_vals;
+#include <functional>
 
 namespace Ui {
     class MainWindow;
@@ -33,18 +19,19 @@ class MainWindow : public QMainWindow
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-// dodanie slotu do uruchamiania symulacji z UI
     public slots:
     void runSimulationAndPlot(); 
+    void updateQtPlots();
+    void updateInputGraph();
 
     private:
     // UI variables
     Ui::MainWindow *ui;
-    Force *m_input_force;
     QTimer *m_timer;
     double m_phase = 0.0;
-
-
+    Force *m_input_force;
+    
+    
     // simulation variables
     double m_t_max;
     double m_dt;
@@ -78,14 +65,13 @@ class MainWindow : public QMainWindow
     Force input_force);
 
     // UI functionalities
-    void updateQtPlots();
     void plotResultsMatplot(); 
-    void updateInputGraph();
-};
+    
+};    
 
 double v_dt(double time, double x, double v, Force input); // 'time' zamiast 't' dla jasności
 double x_dt(double time, double x, double v, Force input);
 
 
 
-#endif // MAINWINDOW_H
+#endif // MAINWINDOW_HEADER

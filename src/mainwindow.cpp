@@ -21,13 +21,15 @@ m_input_force(new Force)
 
 {
     ui->setupUi(this);
-    ui->customPlot->addGraph();
+    ui->customPlot->addGraph(); // input force
     ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-    ui->customPlot_vel->addGraph(); //RK4
-    ui->customPlot_vel->addGraph(); //Euler
+    
+    ui->customPlot_vel->addGraph(); //RK4 (0)
+    ui->customPlot_vel->addGraph(); //Euler (1)
     ui->customPlot_vel->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     
-    ui->customPlot_disp->addGraph();
+    ui->customPlot_disp->addGraph(); //RK4 (0)
+    ui->customPlot_disp->addGraph(); //Euler (1)
     ui->customPlot_disp->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     
 
@@ -97,6 +99,8 @@ m_input_force(new Force)
     statusBar()->showMessage(QString("x=%1, y=%2").arg(x, 0, 'f', 2).arg(y, 0, 'f', 2));
     });
 
+    updateInputGraph();
+
 }
 
 MainWindow::~MainWindow()
@@ -115,6 +119,9 @@ void MainWindow::solveRK4(double initial_a, double initial_b, double step,
     std::vector<double>& result_a, std::vector<double>& result_b,
     Force input_force)
     {
+        result_a.clear();
+        result_b.clear();
+
         result_a.push_back(initial_a);
         result_b.push_back(initial_b);
         
@@ -182,8 +189,8 @@ void MainWindow::runSimulationAndPlot()
     solveRK4(m_x0, m_v0, m_dt, x_dt, v_dt, m_x_rk4, m_v_rk4, *m_input_force);
     solveEuler(m_x0, m_v0, m_dt, x_dt, v_dt, m_x_euler, m_v_euler, input_force);
     
-    // std::cout << "RK4 x_rk4 size: " << m_x_rk4.size() << std::endl;
-    // std::cout << "Euler x_euler size: " << m_x_euler.size() << std::endl;
+    std::cout << "RK4 x_rk4 size: " << m_x_rk4.size() << std::endl;
+    std::cout << "Euler x_euler size: " << m_x_euler.size() << std::endl;
 
 
     updateQtPlots();
@@ -192,46 +199,90 @@ void MainWindow::runSimulationAndPlot()
 
 void MainWindow::updateQtPlots()
 {
-    double y_max_val, y_min_val;
+    double y_max, y_min;
     // velocity plots
-    QVector<double> x(m_v_rk4.size()), y(m_v_rk4.size());
-    y_max_val = m_v_rk4[0];
-    y_min_val = m_v_rk4[0];
-    for (int i = 0; i < m_t.size(); i++) 
+    QVector<double> x, y;
+    y_max = m_v_rk4[0];
+    y_min = m_v_rk4[0];
+    for (int i = 0; i < m_v_rk4.size(); i++) 
     {
-        x[i] = m_t[i];
-        y[i] = m_v_rk4[i];
+        x.append(m_t[i]);
+        y.append(m_v_rk4[i]);
 
-        if (y[i] > y_max_val)
-            y_max_val = y[i];
-        if (y[i] < y_min_val)
-            y_min_val = y[i];
+        if (y[i] > y_max)
+            y_max = y[i];
+        if (y[i] < y_min)
+            y_min = y[i];
     }
     ui->customPlot_vel->xAxis->setRange(0, m_t[m_t.size() - 1]);
-    ui->customPlot_vel->yAxis->setRange(y_min_val, y_max_val);
+    ui->customPlot_vel->yAxis->setRange(y_min, y_max);
     ui->customPlot_vel->graph(0)->setData(x, y);
     ui->customPlot_vel->graph(0)->setPen(QPen(Qt::red));
+    x.clear();
+    y.clear();
 
-    
-    for (int i = 0; i < m_t.size(); i++) 
+    for (int i = 0; i < m_v_euler.size(); i++) 
     {
-        x[i] = m_t[i];
-        y[i] = m_v_euler[i];
+        x.append(m_t[i]);
+        y.append(m_v_euler[i]);
 
-        if (y[i] > y_max_val)
-            y_max_val = y[i];
-        if (y[i] < y_min_val)
-            y_min_val = y[i];
+        if (y[i] > y_max)
+            y_max = y[i];
+        if (y[i] < y_min)
+            y_min = y[i];
     }
     ui->customPlot_vel->xAxis->setRange(0, m_t[m_t.size() - 1]);
-    ui->customPlot_vel->yAxis->setRange(y_min_val, y_max_val);
+    ui->customPlot_vel->yAxis->setRange(y_min, y_max);
     ui->customPlot_vel->graph(1)->setData(x, y);
     ui->customPlot_vel->graph(1)->setPen(QPen(Qt::blue, 1, Qt::DashLine));
+    x.clear();
+    y.clear();
+    // displacement plots 
+
+    y_max = m_x_rk4[0];
+    y_min = m_x_rk4[0];
+    for (int i = 0; i < m_x_rk4.size(); i++) 
+    {
+        x.append(m_t[i]);
+        y.append(m_x_rk4[i]);
+
+        if (y[i] > y_max)
+            y_max = y[i];
+        if (y[i] < y_min)
+            y_min = y[i];
+    }
+    ui->customPlot_disp->xAxis->setRange(0, m_t[m_t.size() - 1]);
+    ui->customPlot_disp->yAxis->setRange(y_min, y_max);
+    ui->customPlot_disp->graph(0)->setData(x, y);
+    ui->customPlot_disp->graph(0)->setPen(QPen(Qt::red));
+    x.clear();
+    y.clear();
     
+    for (int i = 0; i < m_x_euler.size(); i++) 
+    {
+        x.append(m_t[i]);
+        y.append(m_x_euler[i]);
+
+        if (y[i] > y_max)
+            y_max = y[i];
+        if (y[i] < y_min)
+            y_min = y[i];
+    }
+    ui->customPlot_disp->xAxis->setRange(0, m_t[m_t.size() - 1]);
+    ui->customPlot_disp->yAxis->setRange(y_min, y_max);
+    ui->customPlot_disp->graph(1)->setData(x, y);
+    ui->customPlot_disp->graph(1)->setPen(QPen(Qt::blue, 1, Qt::DashLine));
+    x.clear();
+    y.clear();
+    // legend
+
     ui->customPlot_vel->legend->setVisible(true);
     ui->customPlot_vel->graph(0)->setName("RK4");
     ui->customPlot_vel->graph(1)->setName("Euler");
 
+    ui->customPlot_disp->legend->setVisible(true);
+    ui->customPlot_disp->graph(0)->setName("RK4");
+    ui->customPlot_disp->graph(1)->setName("Euler");
     
     ui->customPlot_vel->replot();
 }
@@ -270,17 +321,6 @@ void MainWindow::plotResultsMatplot()
 
 void MainWindow::updateInputGraph()
 {   
-    
-    // for (int i = 0; i < x_rk4.size(); i++) 
-    // {
-    //     x[i] = this->t[i];
-    //     y[i] = this->x_rk4[i];
-
-    //     if (y[i] > y_max_val)
-    //         y_max_val = y[i];
-    //     if (y[i] < y_min_val)
-    //         y_min_val = y[i];
-    // }
     const int N = m_t.size();
     QVector<double> x(N), y(N);
     double amplitude = ui->k1SpinBox->value();
@@ -290,12 +330,21 @@ void MainWindow::updateInputGraph()
     double duty_cycle = 0.5; //ui->dutyCycleSpinBoc->value();
 
     m_input_force->updateForce(ForceType::SINE, m_t, period, amplitude, phase, offset, duty_cycle);
+    double y_max = m_input_force->getValues()[0];
+    double y_min = m_input_force->getValues()[0];
     for (int i = 0; i < N; ++i) {
         x[i] = m_t[i];
         y[i] = m_input_force->getValues()[i];
+
+        if (y[i] > y_max)
+            y_max = y[i];
+        if (y[i] < y_min)
+            y_min = y[i];
     }
 
     ui->customPlot->graph(0)->setData(x, y);
+    ui->customPlot->xAxis->setRange(0, m_t[m_v_rk4.size()]);
+    ui->customPlot->yAxis->setRange(y_min, y_max);
     ui->customPlot->replot();
 
 }

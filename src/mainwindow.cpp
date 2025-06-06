@@ -3,48 +3,62 @@
 #include <matplot/matplot.h>
 #include <iostream>
 #include <QPushButton>
+#include <force.h>
 
 #ifndef PI
 #define PI 3.14159265
 #endif
 
 
+
 double k_global = 2.0;
 double m_global = 1.0;
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+: QMainWindow(parent),
+ui(new Ui::MainWindow),
+m_input_force(new Force)
+
 {
     ui->setupUi(this);
     ui->customPlot->addGraph();
     ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-
     
-    t_max = 6.0;
-    dt = 0.01;
-    x0 = 10.0;
-    v0 = 0.0;
-    k = 3.0;
-    m = 1.0;
-    mi = 0.01;
+    // GUI values init 
+    ui->k1SpinBox->setValue(1.0);
+    ui->k2SpinBox->setValue(1.0);  
+    ui->massSpinBox->setValue(1.0);  
+    // ui->miSpinBox->setValue(1.0);  
+    // ui->tmaxSpinBox->setValue(10.0);
+    // ui->dtSpinBox->setValue(0.01);
+    // ui->x0SpinBox->setValue(0.01);
+    // ui->v0SpinBox->setValue(0.01);
+    // ui->v0SpinBox->setValue(0.01);
+    // ui->typeDropBox->setVal(cos tam cos tam)
 
-    if (ui->runButton) 
-    {
-        connect(ui->runButton, &QPushButton::clicked, this, &MainWindow::runSimulationAndPlot);
-    }
-    if (ui->kSpinBox) { // sprawdzenie czy kSpinBox istnieje
-        ui->kSpinBox->setValue(k_global);
-        ui->kSpinBox->setValue(k);  
-        
-    }
-    if (ui->mSpinBox) {
-        ui->mSpinBox->setValue(m_global); 
-        ui->mSpinBox->setValue(m); 
-    }
 
+    // simulation variables init
+    m_t_max = 6.0;
+    m_dt = 0.01;
+    m_x0 = 10.0;
+    m_v0 = 0.0;
+    m_k1 = 3.0;
+    m_k2 = 3.0;
+    m_mass = 1.0;
+    m_mi = 0.01;
+
+
+    // input force variables init
+
+    // m_input_force->values = populateForce()
+
+    connect(ui->runButton, &QPushButton::clicked, this, &MainWindow::runSimulationAndPlot);
+    
+    
+    ui->massSpinBox->setValue(m_global); 
+    
     m_timer = new QTimer(this);
-    connect(m_timer, &QTimer::timeout, this, &MainWindow::updateGraph);
+    connect(m_timer, &QTimer::timeout, this, &MainWindow::updateInputGraph);
     m_timer->start(30); // update every 30 ms
 
 
@@ -59,6 +73,8 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete m_timer;
+    delete m_input_force;
 }
 
 
@@ -74,19 +90,19 @@ void MainWindow::solveRK4(double initial_a, double initial_b, double step,
         result_b.push_back(initial_b);
         
         double k1a, k1b, k2a, k2b, k3a, k3b, k4a, k4b;
-        for (int i = 0; i < t.size(); i++)
+        for (int i = 0; i < m_t.size(); i++)
         {
-            k1a = func_a(t[i], result_a[i], result_b[i], input_force);
-            k1b = func_b(t[i], result_a[i], result_b[i], input_force);
+            k1a = func_a(m_t[i], result_a[i], result_b[i], input_force);
+            k1b = func_b(m_t[i], result_a[i], result_b[i], input_force);
             
-            k2a = func_a(t[i] + 0.5*step, result_a[i] + 0.5*step*k1a, result_b[i] + 0.5*k1b*step, input_force);
-            k2b = func_b(t[i] + 0.5*step, result_a[i] + 0.5*step*k1a, result_b[i] + 0.5*k1b*step, input_force);
+            k2a = func_a(m_t[i] + 0.5*step, result_a[i] + 0.5*step*k1a, result_b[i] + 0.5*k1b*step, input_force);
+            k2b = func_b(m_t[i] + 0.5*step, result_a[i] + 0.5*step*k1a, result_b[i] + 0.5*k1b*step, input_force);
             
-            k3a = func_a(t[i] + 0.5*step, result_a[i] + 0.5*step*k2a, result_b[i] + 0.5*step*k2b, input_force);
-            k3b = func_b(t[i] + 0.5*step, result_a[i] + 0.5*step*k2a, result_b[i] + 0.5*step*k2b, input_force);
+            k3a = func_a(m_t[i] + 0.5*step, result_a[i] + 0.5*step*k2a, result_b[i] + 0.5*step*k2b, input_force);
+            k3b = func_b(m_t[i] + 0.5*step, result_a[i] + 0.5*step*k2a, result_b[i] + 0.5*step*k2b, input_force);
             
-            k4a = func_a(t[i] + step, result_a[i] + step*k3a, result_b[i] + step*k3b, input_force);
-            k4b = func_b(t[i] + step, result_a[i] + step*k3a, result_b[i] + step*k3b, input_force);
+            k4a = func_a(m_t[i] + step, result_a[i] + step*k3a, result_b[i] + step*k3b, input_force);
+            k4b = func_b(m_t[i] + step, result_a[i] + step*k3a, result_b[i] + step*k3b, input_force);
             
             result_a.push_back(result_a[i] + 1.0/6.0*step*(k1a + 2*k2a + 2*k3a + k4a));
             result_b.push_back(result_b[i] + 1.0/6.0*step*(k1b + 2*k2b + 2*k3b + k4b));
@@ -105,10 +121,10 @@ void MainWindow::solveEuler(double initial_a, double initial_b, double step,
         result_a.push_back(initial_a);
         result_b.push_back(initial_b);
         
-        for (size_t i = 0; i < t.size() - 1; ++i)
+        for (size_t i = 0; i < m_t.size() - 1; ++i)
         {
-            double da_dt = func_a(t[i], result_a[i], result_b[i], input_force);
-            double db_dt = func_b(t[i], result_a[i], result_b[i], input_force);
+            double da_dt = func_a(m_t[i], result_a[i], result_b[i], input_force);
+            double db_dt = func_b(m_t[i], result_a[i], result_b[i], input_force);
             
             double next_a = result_a[i] + step * da_dt;
             double next_b = result_b[i] + step * db_dt;
@@ -121,8 +137,8 @@ void MainWindow::solveEuler(double initial_a, double initial_b, double step,
 void MainWindow::runSimulationAndPlot()
 {
     std::cout << "runSimulationAndPlot called." << std::endl;
-    size_t nupoints = static_cast<size_t>(t_max / dt) + 1;
-    t = matplot::linspace(0, t_max, nupoints);
+    size_t nupoints = static_cast<size_t>(m_t_max / m_dt) + 1;
+    m_t = matplot::linspace(0, m_t_max, nupoints);
 
     double period = 3.0;
     double amplitude = 0.0;
@@ -130,90 +146,101 @@ void MainWindow::runSimulationAndPlot()
     double offset = 0.0;
     double duty_cycle = 0.5;
     
-    double freq =  sqrt(k/m) / (2*PI);
-    period = 1.0 / freq;
-    Force input_force(ForceType::TRIANGLE, t, period, amplitude, phase, offset, duty_cycle);
+    // double freq =  sqrt(m_k1/m_mass) / (2*PI);
+    // period = 1.0 / freq;
+    Force input_force(ForceType::TRIANGLE, m_t, period, amplitude, phase, offset, duty_cycle);
 
-    solveRK4(x0, v0, dt, x_dt, v_dt, x_rk4, v_rk4, input_force);
-    solveEuler(x0, v0, dt, x_dt, v_dt, x_euler, v_euler, input_force);
+    solveRK4(m_x0, m_v0, m_dt, x_dt, v_dt, m_x_rk4, m_v_rk4, input_force);
+    solveEuler(m_x0, m_v0, m_dt, x_dt, v_dt, m_x_euler, m_v_euler, input_force);
     
-    std::cout << "RK4 x_rk4 size: " << x_rk4.size() << std::endl;
-    std::cout << "Euler x_euler size: " << x_euler.size() << std::endl;
+    std::cout << "RK4 x_rk4 size: " << m_x_rk4.size() << std::endl;
+    std::cout << "Euler x_euler size: " << m_x_euler.size() << std::endl;
 
 
     updateQtPlots();
-    //plotResults();
+    //plotResultsMatplot();
 }
 
 void MainWindow::updateQtPlots()
 {
     double y_max_val, y_min_val;
-    QVector<double> x(x_rk4.size()), y(x_rk4.size());
-    y_max_val = x_rk4[0];
-    y_min_val = x_rk4[0];
-    for (int i = 0; i < x_rk4.size(); i++) 
+    QVector<double> x(m_x_rk4.size()), y(m_x_rk4.size());
+    y_max_val = m_x_rk4[0];
+    y_min_val = m_x_rk4[0];
+    for (int i = 0; i < m_x_rk4.size(); i++) 
     {
-        x[i] = this->t[i];
-        y[i] = this->x_rk4[i];
+        x[i] = m_t[i];
+        y[i] = m_x_rk4[i];
 
         if (y[i] > y_max_val)
             y_max_val = y[i];
         if (y[i] < y_min_val)
             y_min_val = y[i];
     }
-    ui->customPlot->xAxis->setRange(0, t[x_rk4.size()]);
+    ui->customPlot->xAxis->setRange(0, m_t[m_x_rk4.size()]);
     ui->customPlot->yAxis->setRange(y_min_val, y_max_val);
     ui->customPlot->graph(0)->setData(x, y);
     ui->customPlot->replot();
 
 }
 
-void MainWindow::plotResults()
+void MainWindow::plotResultsMatplot()
 {
-    std::cout << "plotResults called." << std::endl;
-    if (t.empty() || x_rk4.empty() || x_euler.empty() || v_rk4.empty() || v_euler.empty()) {
-        std::cout << "No data to plot." << std::endl;
-        return;
-    }
+    // std::cout << "plotResults called." << std::endl;
+    // if (t.empty() || x_rk4.empty() || x_euler.empty() || v_rk4.empty() || v_euler.empty()) {
+    //     std::cout << "No data to plot." << std::endl;
+    //     return;
+    // }
 
-    #ifdef __linux__
-        setenv("GNUTERM", "x11", 1);
-    #endif
+    // #ifdef __linux__
+    //     setenv("GNUTERM", "x11", 1);
+    // #endif
 
-    matplot::figure(true);
-    matplot::subplot(1, 2, 1);
-    matplot::hold(matplot::on);
-    matplot::plot(t, x_rk4)->line_width(1).display_name("RK4");
-    matplot::plot(t, x_euler)->line_width(1).display_name("Euler");
-    matplot::xlabel("time");
-    matplot::title("Displacement");
-    matplot::legend();
+    // matplot::figure(true);
+    // matplot::subplot(1, 2, 1);
+    // matplot::hold(matplot::on);
+    // matplot::plot(t, x_rk4)->line_width(1).display_name("RK4");
+    // matplot::plot(t, x_euler)->line_width(1).display_name("Euler");
+    // matplot::xlabel("time");
+    // matplot::title("Displacement");
+    // matplot::legend();
 
-    matplot::subplot(1, 2, 2);
-    matplot::hold(matplot::on);
-    matplot::plot(t, v_rk4)->line_width(1).display_name("RK4");
-    matplot::plot(t, v_euler)->line_width(1).display_name("Euler");
-    matplot::xlabel("time");
-    matplot::title("Velocity");
-    matplot::legend();
+    // matplot::subplot(1, 2, 2);
+    // matplot::hold(matplot::on);
+    // matplot::plot(t, v_rk4)->line_width(1).display_name("RK4");
+    // matplot::plot(t, v_euler)->line_width(1).display_name("Euler");
+    // matplot::xlabel("time");
+    // matplot::title("Velocity");
+    // matplot::legend();
     
-    matplot::show(); 
+    // matplot::show(); 
 }
 
-void MainWindow::updateGraph()
-{
+void MainWindow::updateInputGraph()
+{   
+    
+    // for (int i = 0; i < x_rk4.size(); i++) 
+    // {
+    //     x[i] = this->t[i];
+    //     y[i] = this->x_rk4[i];
+
+    //     if (y[i] > y_max_val)
+    //         y_max_val = y[i];
+    //     if (y[i] < y_min_val)
+    //         y_min_val = y[i];
+    // }
     const int N = 500;
     QVector<double> x(N), y(N);
-
+    double amplitude = ui->k1SpinBox->value();
     for (int i = 0; i < N; ++i) {
         x[i] = i * 2 * M_PI / N;
-        y[i] = std::sin(x[i] + m_phase);
+        y[i] = amplitude * std::sin(x[i] + m_phase);
     }
 
     ui->customPlot->graph(0)->setData(x, y);
     ui->customPlot->replot();
 
-    m_phase += 0.1;  // Advance the phase for motion
+    // m_phase += 0.1;  // Advance the phase for motion
 }
 
 

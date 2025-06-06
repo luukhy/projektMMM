@@ -1,9 +1,24 @@
 #include <force.h>
-#include <math.h>
-#include <cmath>
+
 
 #define PI 3.14159265
 
+
+Force::Force()
+{
+    double t_max = 10;
+    double dt = 0.01;
+    size_t nupoints = static_cast<size_t>(t_max / dt) + 1;
+    this->time = matplot::linspace(0, t_max, nupoints);
+    this->force_type = ForceType::SINE;
+    this->period = 1.0;
+    this->amplitude = 1.0;
+    this->phase = 0.0;
+    this->freq = 1.0/period;
+    this->offset = 0.0;
+    this->duty_cycle = 0.5;
+    this->values = populateForce(force_type, time, this->freq, amplitude, phase, offset, duty_cycle);
+}
 
 Force::Force(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double offset = 0.0, double duty_cycle = 0.0)
 {
@@ -17,6 +32,7 @@ Force::Force(ForceType type, std::vector<double>time, double period, double ampl
     this->duty_cycle = duty_cycle;
     this->values = populateForce(force_type, time, this->freq, amplitude, phase, offset, duty_cycle);
 }
+
 void Force::updateForce(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double duty_cycle)
 {
     this->values.clear();
@@ -33,11 +49,6 @@ void Force::updateForce(ForceType type, std::vector<double>time, double period, 
 
 double Force::atTime(double t)
 {
-    // if (this->force_type == ForceType::SINE)
-    // {
-    //     return amplitude * sin(2 * PI / this->period * t + 2 * PI * this->phase);
-    //     ampl * sin(2 * PI / period * args[i] + 2 * PI * phase)
-    // }
     return getInterpolatedValue(this->time, this->values, t);
 }
 

@@ -2,6 +2,9 @@
 #define FORCE_CLASS_HEADER
 
 #include <vector>
+#include <math.h>
+#include <cmath>
+#include <matplot/matplot.h>
 
 enum class ForceType {SQUARE, TRIANGLE, SINE};
 
@@ -20,12 +23,14 @@ class Force
     double period, amplitude, phase, freq, offset = 0.0, duty_cycle = 0;
     
     public:
+    Force();
     Force(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double offfset, double duty_cycle);
     void updateForce(ForceType type, std::vector<double>time, double period, double amplitude, double phase, double duty_cycle);
     double atTime(double t);
     std::vector<double> getValues();
     std::vector<double> getTime();
 
+    void setValues();
     void setPeriod(double period) {this->period = period;}
     void setAmplitude(double amplitude) {this->amplitude = amplitude;}
     void setPhase(double phase) {this->phase = phase;}

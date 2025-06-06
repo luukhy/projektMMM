@@ -45,7 +45,7 @@ background: lightgrey;</string>
      <rect>
       <x>140</x>
       <y>90</y>
-      <width>138</width>
+      <width>146</width>
       <height>147</height>
      </rect>
     </property>
@@ -55,12 +55,12 @@ background: lightgrey;</string>
        <item>
         <widget class="QLabel" name="label_k">
          <property name="text">
-          <string>stała k:</string>
+          <string>stała k1:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="kSpinBox">
+        <widget class="QDoubleSpinBox" name="k1SpinBox">
          <property name="decimals">
           <number>2</number>
          </property>
@@ -81,7 +81,7 @@ background: lightgrey;</string>
         </widget>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="mSpinBox">
+        <widget class="QDoubleSpinBox" name="massSpinBox">
          <property name="decimals">
           <number>1</number>
          </property>
@@ -97,12 +97,12 @@ background: lightgrey;</string>
        <item>
         <widget class="QLabel" name="label_k_3">
          <property name="text">
-          <string>stała k:</string>
+          <string>stała k2:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="kSpinBox_3">
+        <widget class="QDoubleSpinBox" name="k2SpinBox">
          <property name="decimals">
           <number>1</number>
          </property>
@@ -118,12 +118,12 @@ background: lightgrey;</string>
        <item>
         <widget class="QLabel" name="label_k_4">
          <property name="text">
-          <string>stała k:</string>
+          <string>mi:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="kSpinBox_4">
+        <widget class="QDoubleSpinBox" name="miSpinBox">
          <property name="decimals">
           <number>1</number>
          </property>
@@ -241,7 +241,7 @@ border-radius: 5px;</string>
      <property name="styleSheet">
       <string notr="true">text-color: white;
 background-color: white;
-border-radius: 4px;
+border-radius: 10px;
 </string>
      </property>
      <property name="text">
@@ -307,7 +307,7 @@ border-radius: 5px;</string>
      <property name="styleSheet">
       <string notr="true">text-color: white;
 background-color: white;
-border-radius: 4px;
+border-radius: 10px;
 </string>
      </property>
      <property name="text">

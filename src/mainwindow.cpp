@@ -155,8 +155,8 @@ void MainWindow::runSimulationAndPlot()
     solveRK4(m_x0, m_v0, m_dt, x_dt, v_dt, m_x_rk4, m_v_rk4, *m_input_force);
     solveEuler(m_x0, m_v0, m_dt, x_dt, v_dt, m_x_euler, m_v_euler, *m_input_force);
     
-    std::cout << "RK4 x_rk4 size: " << m_x_rk4.size() << std::endl;
-    std::cout << "Euler x_euler size: " << m_x_euler.size() << std::endl;
+    // std::cout << "RK4 x_rk4 size: " << m_x_rk4.size() << std::endl;
+    // std::cout << "Euler x_euler size: " << m_x_euler.size() << std::endl;
 
 
     updateQtPlots();
@@ -181,7 +181,10 @@ void MainWindow::updateQtPlots()
             y_min = y[i];
     }
     ui->customPlot_vel->xAxis->setRange(0, m_t[m_t.size() - 1]);
-    ui->customPlot_vel->yAxis->setRange(y_min, y_max);
+    if (y_max - y_min <= 0.1)
+        ui->customPlot_vel->yAxis->setRange(floor(y_min - 3), floor(y_max + 3));
+    else
+       ui->customPlot_vel->yAxis->setRange(y_min, y_max);
     ui->customPlot_vel->graph(0)->setData(x, y);
     ui->customPlot_vel->graph(0)->setPen(QPen(Qt::red));
     x.clear();
@@ -198,7 +201,10 @@ void MainWindow::updateQtPlots()
             y_min = y[i];
     }
     ui->customPlot_vel->xAxis->setRange(0, m_t[m_t.size() - 1]);
-    ui->customPlot_vel->yAxis->setRange(y_min, y_max);
+    if (y_max - y_min <= 0.1)
+        ui->customPlot_vel->yAxis->setRange(floor(y_min - 3), floor(y_max + 3));
+    else
+       ui->customPlot_vel->yAxis->setRange(y_min, y_max);    
     ui->customPlot_vel->graph(1)->setData(x, y);
     ui->customPlot_vel->graph(1)->setPen(QPen(Qt::blue, 1, Qt::DashLine));
     x.clear();
@@ -218,7 +224,10 @@ void MainWindow::updateQtPlots()
             y_min = y[i];
     }
     ui->customPlot_disp->xAxis->setRange(0, m_t[m_t.size() - 1]);
-    ui->customPlot_disp->yAxis->setRange(y_min, y_max);
+    if (y_max - y_min <= 0.1)
+        ui->customPlot_disp->yAxis->setRange(floor(y_min - 3), floor(y_max + 3));
+    else
+       ui->customPlot_disp->yAxis->setRange(y_min, y_max);    
     ui->customPlot_disp->graph(0)->setData(x, y);
     ui->customPlot_disp->graph(0)->setPen(QPen(Qt::red));
     x.clear();
@@ -235,7 +244,10 @@ void MainWindow::updateQtPlots()
             y_min = y[i];
     }
     ui->customPlot_disp->xAxis->setRange(0, m_t[m_t.size() - 1]);
-    ui->customPlot_disp->yAxis->setRange(y_min, y_max);
+    if (y_max - y_min <= 0.1)
+        ui->customPlot_disp->yAxis->setRange(floor(y_min - 3), floor(y_max + 3));
+    else
+       ui->customPlot_disp->yAxis->setRange(y_min, y_max);    
     ui->customPlot_disp->graph(1)->setData(x, y);
     ui->customPlot_disp->graph(1)->setPen(QPen(Qt::blue, 1, Qt::DashLine));
     x.clear();
@@ -306,10 +318,12 @@ void MainWindow::updateInputGraph()
         if (y[i] < y_min)
             y_min = y[i];
     }
-
     ui->customPlot->graph(0)->setData(x, y);
+    if (y_max - y_min <= 0.1)
+        ui->customPlot_vel->yAxis->setRange(y_min - 3.0,y_max + 3.0);
+    else
+        ui->customPlot->yAxis->setRange(y_min, y_max);  
     ui->customPlot->xAxis->setRange(0, m_t[m_v_rk4.size()]);
-    ui->customPlot->yAxis->setRange(y_min, y_max);
     ui->customPlot->replot();
 
 }
@@ -346,12 +360,11 @@ void MainWindow::readAndSetForceVariables()
     ForceType force_type = static_cast<ForceType>(ui->dropBox_signal->currentIndex());
 
     m_input_force->updateForce(force_type, m_t, period, amplitude, phase, offset, duty_cycle);
-
 }
 
 double v_dt(double time, double x, double v, Force input)
 {   
-    return (input.atTime(time)) - ((k1_global + k2_global)/m_global * x) - (sgn(v) * v * mi_global / m_global);
+    return 1.0/m_global*( (input.atTime(time)) - ((k1_global + k2_global) * x) - /*(sgn(v)**/  v * mi_global );
 }
 
 double x_dt(double time, double x, double v, Force input)

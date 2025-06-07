@@ -96,6 +96,10 @@ void populateSine(std::vector<double>& vals, std::vector<double> args, double fr
 {
     for (int i = 0; i < args.size(); i++)
     {   
+        if (ampl == 0.0)
+        {
+            vals.push_back(offset);
+        }
         double value_t = ampl * sin(2 * PI * freq * args[i] + 2 * PI * phase) + offset;
         vals.push_back(value_t);
     }
@@ -105,26 +109,36 @@ void populateSawtooth(std::vector<double>& vals, std::vector<double> args, doubl
 {
     double period = 1.0 / freq;
     for (int i = 0; i < args.size(); i++)
-    {   
+    {  
+        if (ampl == 0.0)
+        {
+            vals.push_back(offset);
+            continue;
+        } 
         double value_t = ampl * 2 * abs((args[i] - phase)/ period - floor((args[i] - phase)/ period + 0.5)) + offset;
         vals.push_back(value_t);
     }
+    return;
 }
 
 void populateSquare(std::vector<double>& vals, std::vector<double> args, double freq , double ampl, double phase, double offset, double duty_cycle)
 {
-    if (ampl == 0.0)
-        offset = 0.0;
     double period = 1.0 / freq;
     double high_time = duty_cycle * period;
     for (int i = 0; i < args.size(); i++)
     {   
+        if (ampl == 0.0)
+        {
+            vals.push_back(offset);
+            continue;
+        }
         double t_mod = fmod(args[i], period);
         if (t_mod < high_time)
             vals.push_back(ampl + offset);
         else 
             vals.push_back(-ampl + offset);
     }
+    return;
 }
 
 

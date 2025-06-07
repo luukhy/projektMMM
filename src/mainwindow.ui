@@ -243,8 +243,7 @@ border-radius: 5px;</string>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">text-color: white;
-background-color: white;
+      <string notr="true">background-color: white;
 border-radius: 10px;
 </string>
      </property>
@@ -487,8 +486,7 @@ border-radius: 10px;
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">text-color: white;
-background-color: white;
+      <string notr="true">background-color: white;
 border-radius: 10px;
 </string>
      </property>
@@ -922,8 +920,7 @@ border-radius: 5px;</string>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">text-color: white;
-background-color: white;
+      <string notr="true">background-color: white;
 border-radius: 10px;
 </string>
      </property>
@@ -971,8 +968,7 @@ border-radius: 10px;
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">text-color: white;
-background-color: white;
+      <string notr="true">background-color: white;
 border-radius: 10px;
 </string>
      </property>
@@ -990,7 +986,7 @@ border-radius: 10px;
       </rect>
      </property>
      <property name="autoFillBackground">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="text">
       <string>TextLabel</string>
@@ -1000,13 +996,13 @@ border-radius: 10px;
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>320</x>
       <y>130</y>
       <width>351</width>
-      <height>162</height>
+      <height>163</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -2861,13 +2857,13 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>30</x>
       <y>30</y>
-      <width>273</width>
-      <height>261</height>
+      <width>276</width>
+      <height>262</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -4663,7 +4659,7 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
      <x>0</x>
      <y>0</y>
      <width>1164</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

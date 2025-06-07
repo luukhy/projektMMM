@@ -12,8 +12,10 @@
 
 
 
-double k_global = 2.0;
+double k1_global = 1.0;
+double k2_global = 1.0;
 double m_global = 1.0;
+double mi_global = 1.0;
 
 MainWindow::MainWindow(QWidget *parent)
 : QMainWindow(parent),
@@ -39,67 +41,39 @@ m_input_force(new Force)
     ui->k1SpinBox->setValue(1.0);
     ui->k2SpinBox->setValue(1.0);  
     ui->massSpinBox->setValue(1.0);  
-    // ui->miSpinBox->setValue(1.0);  
-    // ui->tmaxSpinBox->setValue(10.0);
-    // ui->dtSpinBox->setValue(0.01);
-    // ui->x0SpinBox->setValue(0.01);
-    // ui->v0SpinBox->setValue(0.01);
-    // ui->v0SpinBox->setValue(0.01);
-    // ui->typeDropBox->setVal(cos tam cos tam)
+    ui->miSpinBox->setValue(1.0);  
+    ui->t_maxSpinBox->setValue(10.0);
+    ui->d_tSpinBox->setValue(0.01);
+    ui->x_0SpinBox->setValue(0.0);
+    ui->v_0SpinBox->setValue(0.0);
+
+    ui->periodSpinBox->setValue(1.0);
+    ui->ampSpinBox->setValue(1.0);
+    ui->phaseSpinBox->setValue(0.0);
+    ui->offsetSpinBox->setValue(0.0);
+    ui->dutySpinBox->setValue(0.5);
+
+    ui->dropBox_signal->setCurrentIndex(0);
 
 
     // simulation variables init
-    m_t_max = 6.0;
-    m_dt = 0.01;
-    size_t nupoints = static_cast<size_t>(m_t_max / m_dt) + 1;
-    m_t = matplot::linspace(0, m_t_max, nupoints);
+    readAndSetSimVariables();
 
-    m_x0 = 10.0;
-    m_v0 = 0.0;
-    m_k1 = ui->k1SpinBox->value();
-    m_k2 = 3.0;
-    m_mass = 1.0;
-    m_mi = 0.01;
+    // input-force variables init
+    readAndSetForceVariables();
 
 
-    // input force variables init
-    double period = 3.0;
-    double amplitude = 0.0;
-    double phase = 0.0;
-    double offset = 0.0;
-    double duty_cycle = 0.5;
-    m_input_force->updateForce(ForceType::SINE, m_t, period, amplitude, phase, offset, duty_cycle);
 
     connect(ui->runButton, &QPushButton::clicked, this, &MainWindow::runSimulationAndPlot);
-    connect(ui->k1SpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+    connect(ui->dropBox_signal, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &MainWindow::updateInputGraph);
-
-    connect(ui->k2SpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-            this, &MainWindow::updateInputGraph);
-    
-    
-    // m_timer = new QTimer(this);
-    // connect(m_timer, &QTimer::timeout, this, &MainWindow::updateInputGraph);
-    // m_timer->start(30); // update every 30 ms
-
-
-    connect(ui->customPlot, &QCustomPlot::mouseMove, this, [this](QMouseEvent *event){
-    double x = ui->customPlot->xAxis->pixelToCoord(event->pos().x());
-    double y = ui->customPlot->yAxis->pixelToCoord(event->pos().y());
-    statusBar()->showMessage(QString("x=%1, y=%2").arg(x, 0, 'f', 2).arg(y, 0, 'f', 2));
-    });
-
-    connect(ui->customPlot_disp, &QCustomPlot::mouseMove, this, [this](QMouseEvent *event){
-    double x = ui->customPlot->xAxis->pixelToCoord(event->pos().x());
-    double y = ui->customPlot->yAxis->pixelToCoord(event->pos().y());
-    statusBar()->showMessage(QString("x=%1, y=%2").arg(x, 0, 'f', 2).arg(y, 0, 'f', 2));
-    });
-
-    connect(ui->customPlot_vel, &QCustomPlot::mouseMove, this, [this](QMouseEvent *event){
-    double x = ui->customPlot->xAxis->pixelToCoord(event->pos().x());
-    double y = ui->customPlot->yAxis->pixelToCoord(event->pos().y());
-    statusBar()->showMessage(QString("x=%1, y=%2").arg(x, 0, 'f', 2).arg(y, 0, 'f', 2));
-    });
+    QList<QDoubleSpinBox*> spinBoxes = {ui->t_maxSpinBox, ui->d_tSpinBox, ui->periodSpinBox,
+                            ui->ampSpinBox, ui->phaseSpinBox, ui->offsetSpinBox, ui->dutySpinBox};
+    for (QDoubleSpinBox* spinBox : spinBoxes) 
+    {
+        connect(spinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                this, &MainWindow::updateInputGraph);
+    }
 
     updateInputGraph();
 
@@ -175,21 +149,11 @@ void MainWindow::solveEuler(double initial_a, double initial_b, double step,
 void MainWindow::runSimulationAndPlot()
 {
     std::cout << "runSimulationAndPlot called." << std::endl;
-    size_t nupoints = static_cast<size_t>(m_t_max / m_dt) + 1;
-    m_t = matplot::linspace(0, m_t_max, nupoints);
-
-    double period = 3.0;
-    double amplitude = 0.0;
-    double phase = 0.0;
-    double offset = 0.0;
-    double duty_cycle = 0.5;
+    readAndSetSimVariables();
+    readAndSetForceVariables();
     
-    // double freq =  sqrt(m_k1/m_mass) / (2*PI);
-    // period = 1.0 / freq;
-    
-    Force input_force(ForceType::TRIANGLE, m_t, period, amplitude, phase, offset, duty_cycle);
     solveRK4(m_x0, m_v0, m_dt, x_dt, v_dt, m_x_rk4, m_v_rk4, *m_input_force);
-    solveEuler(m_x0, m_v0, m_dt, x_dt, v_dt, m_x_euler, m_v_euler, input_force);
+    solveEuler(m_x0, m_v0, m_dt, x_dt, v_dt, m_x_euler, m_v_euler, *m_input_force);
     
     std::cout << "RK4 x_rk4 size: " << m_x_rk4.size() << std::endl;
     std::cout << "Euler x_euler size: " << m_x_euler.size() << std::endl;
@@ -324,15 +288,13 @@ void MainWindow::plotResultsMatplot()
 
 void MainWindow::updateInputGraph()
 {   
+    readAndSetSimVariables();
+
     const int N = m_t.size();
     QVector<double> x(N), y(N);
-    double amplitude = ui->k1SpinBox->value();
-    double period = ui->k2SpinBox->value(); //ui->periodSpinBoc->value();
-    double phase = 0.0; //ui->phaseSpinBoc->value();
-    double offset = 0.0; //ui->offsetSpinBoc->value();
-    double duty_cycle = 0.5; //ui->dutyCycleSpinBoc->value();
 
-    m_input_force->updateForce(ForceType::SINE, m_t, period, amplitude, phase, offset, duty_cycle);
+    readAndSetForceVariables();
+    
     double y_max = m_input_force->getValues()[0];
     double y_min = m_input_force->getValues()[0];
     for (int i = 0; i < N; ++i) {
@@ -352,12 +314,56 @@ void MainWindow::updateInputGraph()
 
 }
 
-double v_dt(double time, double x, double v, Force input)
+
+
+void MainWindow::readAndSetSimVariables()
 {
-    return -k_global/m_global * x + input.atTime(time);
+    m_k1 = ui->k1SpinBox->value();
+    m_k2 = ui->k2SpinBox->value();
+    m_mass = ui->massSpinBox->value();
+    m_mi = ui->miSpinBox->value();
+    m_t_max = ui->t_maxSpinBox->value();
+    m_dt = ui->d_tSpinBox->value();
+    size_t nupoints = static_cast<size_t>(m_t_max / m_dt) + 1;
+    m_t = matplot::linspace(0, m_t_max, nupoints);
+    m_x0 = ui->x_0SpinBox->value();
+    m_v0 = ui->v_0SpinBox->value();
+
+    k1_global = m_k1;
+    k2_global = m_k2;
+    m_global = m_mass;
+    mi_global = m_mi;
+    
+}
+
+void MainWindow::readAndSetForceVariables()
+{
+    double period = ui->periodSpinBox->value();
+    double amplitude = ui->ampSpinBox->value();
+    double phase = ui->phaseSpinBox->value();
+    double offset = ui->offsetSpinBox->value();
+    double duty_cycle = ui->dutySpinBox->value();
+    ForceType force_type = static_cast<ForceType>(ui->dropBox_signal->currentIndex());
+
+    m_input_force->updateForce(force_type, m_t, period, amplitude, phase, offset, duty_cycle);
+
+}
+
+double v_dt(double time, double x, double v, Force input)
+{   
+    return (input.atTime(time)) - ((k1_global + k2_global)/m_global * x) - (sgn(v) * v * mi_global / m_global);
 }
 
 double x_dt(double time, double x, double v, Force input)
 {
     return v;
 }
+
+int sgn(double value)
+{
+    if (value < 0)
+        return -1;
+    else 
+        return 1;
+}
+

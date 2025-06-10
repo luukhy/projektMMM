@@ -518,8 +518,7 @@ border-radius: 5px;</string>
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">text-color: white;
-background-color: white;
+      <string notr="true">background-color: white;
 border-radius: 10px;
 </string>
      </property>
@@ -944,8 +943,7 @@ border-radius: 10px;
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">text-color: white;
-background-color: white;
+      <string notr="true">background-color: white;
 border-radius: 10px;
 </string>
      </property>
@@ -1743,8 +1741,7 @@ border-radius: 5px;</string>
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">text-color: white;
-background-color: white;
+      <string notr="true">background-color: white;
 border-radius: 10px;
 </string>
      </property>
@@ -1974,8 +1971,7 @@ border-radius: 10px;
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">text-color: white;
-background-color: white;
+      <string notr="true">background-color: white;
 border-radius: 10px;
 </string>
      </property>
@@ -1986,10 +1982,10 @@ border-radius: 10px;
     <widget class="QLabel" name="Imagelabel">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>271</width>
-       <height>171</height>
+       <x>10</x>
+       <y>10</y>
+       <width>251</width>
+       <height>161</height>
       </rect>
      </property>
      <property name="palette">
@@ -2100,12 +2096,13 @@ border-radius: 10px;
     </widget>
    </widget>
    <widget class="QWidget" name="layoutWidget">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>320</x>
       <y>130</y>
       <width>351</width>
-      <height>162</height>
+      <height>163</height>
      </rect>
     </property>
     <property name="palette">
@@ -4054,6 +4051,7 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
      </item>
     </layout>
    </widget>
+   <widget class="QWidget" name="layoutWidget">
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
@@ -6675,7 +6673,7 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
      <x>0</x>
      <y>0</y>
      <width>1164</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

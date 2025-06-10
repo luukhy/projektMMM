@@ -27,7 +27,6 @@ class MainWindow : public QMainWindow
     private:
     // UI variables
     Ui::MainWindow *ui;
-    QTimer *m_timer;
     double m_phase = 0.0;
     Force *m_input_force;
 

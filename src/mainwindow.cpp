@@ -36,16 +36,14 @@ m_input_force(new Force)
     ui->customPlot_disp->addGraph(); //Euler (1)
     ui->customPlot_disp->addGraph(); //input (2)
     ui->customPlot_disp->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-    qDebug() << QDir::currentPath();
-    
-    QPixmap pixmap("../res/model.png");
     ui->Imagelabel->setScaledContents(true);
+    QPixmap pixmap("../../res/model.png"); 
+    ui->Imagelabel->setPixmap(pixmap);
     if (pixmap.isNull()) {
         qDebug() << "Failed to load image!";
     } else {
         ui->Imagelabel->setPixmap(pixmap);
     }
-
 
     // GUI values init 
     ui->k1SpinBox->setValue(1.0);
@@ -91,8 +89,8 @@ m_input_force(new Force)
 
 MainWindow::~MainWindow()
 {
-    delete ui;
     delete m_input_force;
+    delete ui;
 }
 
 
@@ -179,7 +177,7 @@ void MainWindow::updateQtPlots()
     QVector<double> x, y;
     y_max = m_v_rk4[0];
     y_min = m_v_rk4[0];
-    for (int i = 0; i < m_v_rk4.size(); i++) 
+    for (int i = 0; i < m_t.size()-1; i++) 
     {
         x.append(m_t[i]);
         y.append(m_v_rk4[i]);
@@ -199,7 +197,7 @@ void MainWindow::updateQtPlots()
     x.clear();
     y.clear();
 
-    for (int i = 0; i < m_v_euler.size(); i++) 
+    for (int i = 0; i < m_t.size()-1; i++) 
     {
         x.append(m_t[i]);
         y.append(m_v_euler[i]);
@@ -223,7 +221,7 @@ void MainWindow::updateQtPlots()
 
     y_max = m_x_rk4[0];
     y_min = m_x_rk4[0];
-    for (int i = 0; i < m_x_rk4.size(); i++) 
+    for (int i = 0; i < m_t.size()-1; i++) 
     {
         x.append(m_t[i]);
         y.append(m_x_rk4[i]);
@@ -243,7 +241,7 @@ void MainWindow::updateQtPlots()
     x.clear();
     y.clear();
     
-    for (int i = 0; i < m_x_euler.size(); i++) 
+    for (int i = 0; i < m_t.size()-1; i++) 
     {
         x.append(m_t[i]);
         y.append(m_x_euler[i]);
@@ -342,7 +340,7 @@ void MainWindow::updateInputGraph()
         ui->customPlot_vel->yAxis->setRange(y_min - 3.0,y_max + 3.0);
     else
         ui->customPlot->yAxis->setRange(y_min, y_max);  
-    ui->customPlot->xAxis->setRange(0, m_t[m_v_rk4.size()]);
+    ui->customPlot->xAxis->setRange(0, m_t.back());
     ui->customPlot->replot();
 
 }

@@ -6,7 +6,7 @@
 #include <cmath>
 #include <matplot/matplot.h>
 
-enum class ForceType {SQUARE, TRIANGLE, SINE};
+enum class ForceType {SINE = 0, SQUARE = 1, TRIANGLE = 2};
 
 std::vector<double> populateForce(ForceType force_type, std::vector<double> time, double period, double amplitude, double phase, double offset, double duty_cycle);
 double getInterpolatedValue(std::vector<double>& time, const std::vector<double>& values, double t_searched);

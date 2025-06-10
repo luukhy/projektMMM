@@ -65,6 +65,9 @@ class MainWindow : public QMainWindow
     std::vector<double>& result_a, std::vector<double>& result_b,
     Force input_force);
 
+    void readAndSetSimVariables();
+    void readAndSetForceVariables();
+
     // UI functionalities
     void plotResultsMatplot(); 
     
@@ -72,7 +75,6 @@ class MainWindow : public QMainWindow
 
 double v_dt(double time, double x, double v, Force input); // 'time' zamiast 't' dla jasności
 double x_dt(double time, double x, double v, Force input);
-
-
+int sgn(double value);
 
 #endif // MAINWINDOW_HEADER

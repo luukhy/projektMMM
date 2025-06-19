@@ -280,10 +280,12 @@ void MainWindow::updateQtPlots()
     ui->customPlot_vel->legend->setVisible(true);
     ui->customPlot_vel->graph(0)->setName("RK4");
     ui->customPlot_vel->graph(1)->setName("Euler");
+    ui->customPlot_vel->graph(2)->setName("Input");
 
     ui->customPlot_disp->legend->setVisible(true);
     ui->customPlot_disp->graph(0)->setName("RK4");
     ui->customPlot_disp->graph(1)->setName("Euler");
+    ui->customPlot_disp->graph(2)->setName("Input");
     
     ui->customPlot_vel->replot();
     ui->customPlot_disp->replot();

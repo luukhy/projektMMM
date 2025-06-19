@@ -27,6 +27,7 @@ class MainWindow : public QMainWindow
     private:
     // UI variables
     Ui::MainWindow *ui;
+    double m_phase = 0.0;
     Force *m_input_force;
 
     
@@ -71,6 +72,7 @@ class MainWindow : public QMainWindow
     
 };    
 
+// std::filesystem::path getResPath();
 double v_dt(double time, double x, double v, Force input); // 'time' zamiast 't' dla jasności
 double x_dt(double time, double x, double v, Force input);
 int sgn(double value);

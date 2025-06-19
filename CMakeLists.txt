@@ -26,10 +26,12 @@ if (MSVC)
 endif()
 
 if(UNIX AND NOT APPLE)
+    set(RESOURCE_PATH "../res/model.png")
     set(CMAKE_PREFIX_PATH "/home/piotrek/Qt/6.9.0/gcc_64/lib/cmake")
 endif()
 
 if(WIN32)
+    set(RESOURCE_PATH "../../res/model.png")
     set(CMAKE_PREFIX_PATH "D:/QT/6.9.0/msvc2022_64/lib/cmake")
 endif()
 
@@ -55,6 +57,8 @@ add_executable(test-executable
     include/force.h
     src/force.cpp
 )
+
+target_compile_definitions(MyExecutable PRIVATE RESOURCE_PATH="${RESOURCE_PATH}")
 
 target_link_libraries(test-executable PRIVATE 
     matplot       

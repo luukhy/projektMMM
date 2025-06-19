@@ -997,12 +997,11 @@ border-radius: 10px;
     </widget>
    </widget>
    <widget class="QWidget" name="layoutWidget">
-   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>320</x>
       <y>130</y>
-      <width>354</width>
+      <width>351</width>
       <height>163</height>
      </rect>
     </property>
@@ -2483,12 +2482,6 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
          <property name="decimals">
           <number>2</number>
          </property>
-         <property name="minimum">
-          <double>-180.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>180.000000000000000</double>
-         </property>
          <property name="singleStep">
           <double>0.100000000000000</double>
          </property>
@@ -2865,12 +2858,11 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
     </layout>
    </widget>
    <widget class="QWidget" name="layoutWidget">
-   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>30</x>
       <y>30</y>
-      <width>279</width>
+      <width>276</width>
       <height>262</height>
      </rect>
     </property>
@@ -4468,9 +4460,6 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
          <property name="decimals">
           <number>2</number>
          </property>
-         <property name="minimum">
-          <double>-99.989999999999995</double>
-         </property>
          <property name="singleStep">
           <double>0.100000000000000</double>
          </property>
@@ -4653,9 +4642,6 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
          </property>
          <property name="decimals">
           <number>2</number>
-         </property>
-         <property name="minimum">
-          <double>-99.989999999999995</double>
          </property>
          <property name="singleStep">
           <double>0.100000000000000</double>

@@ -5,6 +5,8 @@
 #include <QPushButton>
 #include <force.h>
 #include <QPixmap>
+#include <filesystem>
+#include <sstream>
 
 #ifndef PI
 #define PI 3.14159265
@@ -37,7 +39,11 @@ m_input_force(new Force)
     ui->customPlot_disp->addGraph(); //input (2)
     ui->customPlot_disp->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     ui->Imagelabel->setScaledContents(true);
-    QPixmap pixmap("../../res/model.png"); 
+ 
+    // std::ostringstream oss;
+    // oss << RESOURCE_PATH << "/model.png";
+    
+    QPixmap pixmap(RESOURCE_PATH); 
     ui->Imagelabel->setPixmap(pixmap);
     if (pixmap.isNull()) {
         qDebug() << "Failed to load image!";
@@ -378,6 +384,11 @@ void MainWindow::readAndSetForceVariables()
 
     m_input_force->updateForce(force_type, m_t, period, amplitude, phase, offset, duty_cycle);
 }
+
+// std::filesystem::path getResPath()
+// {
+//     return std::filesystem::path(RESOURCE_PATH);
+// }
 
 double v_dt(double time, double x, double v, Force input)
 {   

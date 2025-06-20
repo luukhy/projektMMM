@@ -2482,6 +2482,9 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
          <property name="decimals">
           <number>2</number>
          </property>
+         <property name="minimum">
+          <double>-99.000000000000000</double>
+         </property>
          <property name="singleStep">
           <double>0.100000000000000</double>
          </property>
@@ -2664,6 +2667,9 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
          </property>
          <property name="decimals">
           <number>2</number>
+         </property>
+         <property name="minimum">
+          <double>-99.000000000000000</double>
          </property>
          <property name="singleStep">
           <double>0.100000000000000</double>
@@ -2862,7 +2868,7 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
      <rect>
       <x>30</x>
       <y>30</y>
-      <width>276</width>
+      <width>279</width>
       <height>262</height>
      </rect>
     </property>
@@ -4460,6 +4466,9 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
          <property name="decimals">
           <number>2</number>
          </property>
+         <property name="minimum">
+          <double>-99.000000000000000</double>
+         </property>
          <property name="singleStep">
           <double>0.100000000000000</double>
          </property>
@@ -4643,6 +4652,9 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
          <property name="decimals">
           <number>2</number>
          </property>
+         <property name="minimum">
+          <double>-99.000000000000000</double>
+         </property>
          <property name="singleStep">
           <double>0.100000000000000</double>
          </property>
@@ -4659,7 +4671,7 @@ border-radius: 10px;qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 r
      <x>0</x>
      <y>0</y>
      <width>1164</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

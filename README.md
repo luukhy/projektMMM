@@ -3,16 +3,15 @@
 # Prerequisites
 Building:
 - CMake
-- compiler of choice
+- 
+- compiler of choice (preferably 
 
-Using:
-- Gnuplot
 
 # Model wózka na sprężynach z wejściem w postaci siły i tarcia
 
 ![model](res/model.png)
 
-#Downlowding the realese
+# Downlowding the realese
 If you download an executable file for Linux, after downloading it to your desired directory you must first run
 ```teminal
 chmod +x ./executable-name
